@@ -3,14 +3,16 @@
 #include <string>
 #include "catalog.h"
 #include "serial.h"
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<stdlib.h>
+
 using namespace std;
 
-void InsertByFilename() {
-    string str;
-    cout << "please input the data file name: ";
-    cin >> str;
-    BuildCatalogFile(str);
-    cout << "catalog built!" << endl;
+void InsertByFilename(string file_name) {
+  BuildCatalogFile(file_name);
+  cout << "catalog built!" << endl;
 }
 
 void CheckCatalog() {
@@ -22,27 +24,60 @@ void CheckCatalog() {
   }
 }
 
-void MatchKeyAWithValueB(string key, string value) {
-  get_bin();
+void MatchKeyAWithValueB(string key, string value, string file_name) {
+  get_bin(file_name);
   struct catalog c = read_catalog();
   find_A_equals_B(key, value, &c);
 }
 int main(void) {
-    std::string operation;
-    std::string key, value;
-    cout << "please input \"insert\"" << endl;
-    cin >> operation;
-    if (operation == "insert") InsertByFilename(); 
-    cout << "please give the command(insert check find)" << endl;
-    while (std::cin >> operation) {
-        if (operation == "insert") InsertByFilename();
-        else if (operation == "check") CheckCatalog();
-        else if (operation == "find") {
-		cout << "please input A and B"<<endl;
-		cin >> key >> value;
-		MatchKeyAWithValueB(key, value);
-	}
-        else return 0;
+  struct timeval tpstart,tpend;
+  float timeuse;
+  clock_t start, finish;
+  std::string operation;
+  std::string key, value;
+  std::string file_name;
+  cout << "please input \"insert\"" << endl;
+  cin >> operation;
+  if (operation == "insert") {
+    cout << "please input the data file name: " << endl;
+    cin >> file_name; 
+    start = clock();
+    InsertByFilename(file_name); 
+    finish = clock();
+    timeuse = (double)(finish-start)/CLOCKS_PER_SEC;
+    cout << "Total time:" << timeuse << " seconds" <<endl;
+    
+  }
+  cout << "please give the command(insert check find)" << endl;
+  while (std::cin >> operation) {
+    if (operation == "insert") {
+      cout << "please input the data file name: " << endl;
+      cin >> file_name;
+      start = clock();
+      InsertByFilename(file_name); 
+      finish = clock();
+      timeuse = (double)(finish-start)/CLOCKS_PER_SEC;
+      cout << "Total time:" << timeuse << " seconds" <<endl;
+
     }
-    return 0;
+    else if (operation == "check") {
+      start = clock();
+      CheckCatalog();
+      finish = clock();
+      timeuse = (double)(finish-start)/CLOCKS_PER_SEC;
+      cout << "Total time:" << timeuse << " seconds" <<endl;
+    }
+    else if (operation == "find") {
+      cout << "please input A and B"<<endl;
+      cin >> key >> value;
+      start = clock();
+      MatchKeyAWithValueB(key, value, file_name);
+      finish = clock();
+      timeuse = (double)(finish-start)/CLOCKS_PER_SEC;
+      cout << "Total time:" << timeuse << " seconds" <<endl;
+    }
+    else return 0;
+    cout << "please give the command(insert check find)" << endl;
+  }
+  return 0;
 }
